@@ -8,8 +8,8 @@
     {
         // Hardcoded Git repository URL en .NET commando
         private static readonly string repoUrl = "git@github.com:KwekerijBloemendaal/RobotService.git";
-        private static readonly string servicePath = "/home/raspberrypi/Documents/Servics/RobotService";
-        private static readonly string dotnetCommand = "publish --configuration Release --runtime linux-arm64 --self-contained -o" + servicePath;
+        private static readonly string servicePath = "/home/raspberrypi/Documents/Services/RobotService";
+        private static readonly string dotnetCommand = "publish --configuration Release --runtime linux-arm64 --self-contained RobotService.csproj -o" + servicePath;
         private static readonly string localRepoPath = Path.Combine("/home/raspberrypi/Documents/Repos/RobotService");
 
         static void Main(string[] args)
@@ -80,6 +80,13 @@
         {
             try
             {
+                // Controleer of de output directory bestaat, maak deze anders aan
+                if (!Directory.Exists(servicePath))
+                {
+                    Console.WriteLine($"Maak de output directory aan: {servicePath}");
+                    Directory.CreateDirectory(servicePath);
+                }
+
                 Console.WriteLine($"Voer het dotnet-commando uit: {command} in de map {workingDirectory}");
                 var processInfo = new ProcessStartInfo("dotnet", command)
                 {
