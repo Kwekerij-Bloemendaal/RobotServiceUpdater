@@ -9,7 +9,7 @@
         // Hardcoded Git repository URL en .NET commando
         private static readonly string repoUrl = "git@github.com:KwekerijBloemendaal/RobotService.git";
         private static readonly string servicePath = "/home/raspberrypi/Documents/Services/RobotService";
-        private static readonly string dotnetCommand = "publish --configuration Release --runtime linux-arm64 --self-contained RobotService.csproj -o" + servicePath;
+        private static readonly string dotnetCommand = "publish --configuration Release --runtime linux-arm64 --self-contained RobotService.csproj -o " + servicePath;
         private static readonly string localRepoPath = Path.Combine("/home/raspberrypi/Documents/Repos/RobotService");
 
         static void Main(string[] args)
