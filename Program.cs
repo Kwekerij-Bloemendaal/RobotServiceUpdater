@@ -38,7 +38,7 @@
                 }
 
                 // Voer het dotnet-commando uit in de map van de gepulde repository
-                ExecuteDotnetCommand(dotnetCommand, localRepoPath);
+                //ExecuteDotnetCommand(dotnetCommand, localRepoPath);
             }
             catch (Exception ex)
             {
