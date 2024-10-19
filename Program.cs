@@ -2,7 +2,6 @@
 {
     using System;
     using System.Diagnostics;
-    using LibGit2Sharp;
     using System.IO;
 
     class GitPullAndDotnetService
@@ -12,37 +11,69 @@
         private static readonly string dotnetCommand = "build";
         private static readonly string localRepoPath = Path.Combine("/home/raspberrypi/Documents/Repos/RobotService");
 
+        // Pad naar de private SSH-sleutel
+        private static readonly string sshKeyPath = "/path/to/id_rsa";  // Zorg dat dit verwijst naar je private SSH-sleutel
+
         static void Main(string[] args)
         {
             try
             {
-                // Als de repo-map al bestaat, voer git pull uit
+                // Als de repo-map al bestaat, voer git pull uit via extern Git-commando
                 if (Directory.Exists(localRepoPath))
                 {
                     Console.WriteLine("Repository bestaat al. Voer git pull uit.");
-                    using (var repo = new Repository(localRepoPath))
-                    {
-                        var remote = repo.Network.Remotes["origin"];
-                        var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-                        Commands.Fetch(repo, remote.Name, refSpecs, null, "");
-                        var signature = new Signature("User", "email@example.com", DateTimeOffset.Now);
-                        var mergeResult = Commands.Pull(repo, signature, null);
-                        Console.WriteLine($"Merge result: {mergeResult.Status}");
-                    }
+                    RunGitCommand("pull", localRepoPath);
                 }
                 else
                 {
-                    // Kloon de repository als deze nog niet bestaat
+                    // Kloon de repository via extern Git-commando
                     Console.WriteLine($"Kloon de repository van {repoUrl} naar {localRepoPath}.");
-                    Repository.Clone(repoUrl, localRepoPath);
+                    RunGitCommand($"clone {repoUrl} {localRepoPath}", Directory.GetCurrentDirectory());
                 }
 
                 // Voer het dotnet-commando uit in de map van de gepulde repository
-                //ExecuteDotnetCommand(dotnetCommand, localRepoPath);
+                ExecuteDotnetCommand(dotnetCommand, localRepoPath);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Fout: {ex.Message}");
+            }
+        }
+
+        // Methode om een Git-commando uit te voeren
+        static void RunGitCommand(string arguments, string workingDirectory)
+        {
+            try
+            {
+                Console.WriteLine($"Voer het git-commando uit: git {arguments} in de map {workingDirectory}");
+                var processInfo = new ProcessStartInfo("git", arguments)
+                {
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory
+                };
+
+                using (var process = Process.Start(processInfo))
+                {
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+
+                    Console.WriteLine("Git output:");
+                    Console.WriteLine(output);
+
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        Console.WriteLine("Git fout:");
+                        Console.WriteLine(error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fout bij het uitvoeren van het git-commando: {ex.Message}");
             }
         }
 
@@ -67,12 +98,12 @@
                     string error = process.StandardError.ReadToEnd();
                     process.WaitForExit();
 
-                    Console.WriteLine("Output:");
+                    Console.WriteLine("Dotnet output:");
                     Console.WriteLine(output);
 
                     if (!string.IsNullOrEmpty(error))
                     {
-                        Console.WriteLine("Fout:");
+                        Console.WriteLine("Dotnet fout:");
                         Console.WriteLine(error);
                     }
                 }
@@ -83,5 +114,4 @@
             }
         }
     }
-
 }
