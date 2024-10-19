@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RobotServiceUpdater": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
