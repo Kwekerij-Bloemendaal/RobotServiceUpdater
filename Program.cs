@@ -97,20 +97,18 @@
                     WorkingDirectory = workingDirectory
                 };
 
-                using (var process = Process.Start(processInfo))
+                using var process = Process.Start(processInfo);
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                Console.WriteLine("Dotnet output:");
+                Console.WriteLine(output);
+
+                if (!string.IsNullOrEmpty(error))
                 {
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    Console.WriteLine("Dotnet output:");
-                    Console.WriteLine(output);
-
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Console.WriteLine("Dotnet fout:");
-                        Console.WriteLine(error);
-                    }
+                    Console.WriteLine("Dotnet fout:");
+                    Console.WriteLine(error);
                 }
             }
             catch (Exception ex)
