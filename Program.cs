@@ -8,11 +8,9 @@
     {
         // Hardcoded Git repository URL en .NET commando
         private static readonly string repoUrl = "git@github.com:KwekerijBloemendaal/RobotService.git";
-        private static readonly string dotnetCommand = "build";
+        private static readonly string servicePath = "/home/raspberrypi/Documents/Servics/RobotService";
+        private static readonly string dotnetCommand = "publish --configuration Release --runtime linux-arm64 --self-contained -o" + servicePath;
         private static readonly string localRepoPath = Path.Combine("/home/raspberrypi/Documents/Repos/RobotService");
-
-        // Pad naar de private SSH-sleutel
-        private static readonly string sshKeyPath = "/path/to/id_rsa";  // Zorg dat dit verwijst naar je private SSH-sleutel
 
         static void Main(string[] args)
         {
